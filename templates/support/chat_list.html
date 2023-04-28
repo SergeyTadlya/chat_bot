@@ -1,0 +1,42 @@
+{% extends 'support/base.html' %}
+{% block content %}
+    {% if current_chats %}
+        <h2 align="center">{{ title }}</h2>
+        <div class="chat-list-table">
+            <table class="table table-bordered" style="width: 95%; text-align: center">
+                <thead>
+                    <tr>
+                        <th scope="col" width="5%" class="align-middle">Chat</th>
+                        <th scope="col" class="align-middle">Client</th>
+                        <th scope="col" class="align-middle">Last massage</th>
+                        <th scope="col" width="10%" class="align-middle">Need manager help (yes/no)</th>
+                        <th scope="col" width="10%" class="align-middle">Manager is already helping (yes/no)</th>
+                        <th scope="col" width="10%" class="align-middle">End of manager help (yes/no)</th>
+                        <th scope="col" class="align-middle">Services</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for chat in current_chats %}
+                        <tr>
+                            <th scope="row" class="align-middle"><a href="{% url 'chat_detail' chat.id %}">{{ chat.id }}</a></th>
+                            <td class="align-middle">{{ chat.client }}</td>
+                            <td class="align-middle">{{ chat.last_message }}</td>
+                            <td class="align-middle" style="{{ chat.need_help_style }}">{{ chat.need_help }}</td>
+                            <td class="align-middle" style="{{ chat.is_help_style }}">{{ chat.is_help }}</td>
+                            <td class="align-middle">{{ chat.is_finished }}</td>
+                            <td class="align-middle">
+                                {% for service in chat.services %}
+                                    {% if service.name %}
+                                        {{ service.name }}, {{ service.quantity }}<br>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <h3 align="center">Chat list is empty</h3>
+    {% endif %}
+{% endblock %}

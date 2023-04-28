@@ -1,0 +1,9 @@
+*env*/
+__pycache__/
+*.sqlite3
+.idea
+#chat_bot_app/migrations/*
+chat_bot_project/.env
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py

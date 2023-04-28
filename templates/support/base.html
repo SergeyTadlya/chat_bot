@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% load static %}
+{% load account %}
+{% load i18n %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/support.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/chat_bot.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'chat_bot' %}">ChatBot</a>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'support' %}">Chat list</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_signup' %}">Registration</a>
+                    </li>
+                {% elif user.is_authenticated %}
+                    <li class="nav-item">
+                        <div class="nav-link active">{{ user.username }}</div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <div class="support">
+        {% if not user.is_authenticated %}
+            {% block auth %}
+            {% endblock %}
+        {% else %}
+            {% block content %}
+            {% endblock %}
+        {% endif %}
+    </div>
+</body>
+<script src="{% static 'js/support.js' %}"></script>
+</html>

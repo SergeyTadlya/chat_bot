@@ -1,0 +1,107 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'css/chat_bot.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <title>ChatBot</title>
+</head>
+<body>
+    <div class="chat-box-wrapper">
+        <div class="chat-box__launcher">
+        <button class="chat-box-button">
+            <span><img class="chat-box-button__icon" src="{% static 'img/chat-icon.svg' %}"></span>
+            <span><img class="chat-box-button__icon chat-box-button__icon--close" src="{% static 'img/close.svg' %}" alt=""></span>
+        </button>
+    </div>
+            <div class="chat-box">
+            <div class="chat-box__header">
+                <div>
+                    <h4 class="chat-box__title">VVA</h4>
+                    <p class="chat-box__subtitle">Pasikalbėkime!</p>
+                </div>
+                <div class="cart-open">
+                    <button class="cart-open__button">
+                        <span><img class="basket__icon" src="{% static 'img/basket.svg' %}" alt=""></span>
+                        <span class="cart-open__count" id="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+            <div class="added-email"></div>
+            <div class="chat-box__content">
+                <div class="chat" id="chat-box-content">
+                    <div class="user-auth" id="user-auth">
+                        <div class="user-auth-content">
+                            <form method="POST" id="user-auth-form">
+                                <label class="product__title">Enter email for identification</label>
+                                <input type="text" placeholder="Enter here" id="user-email" class="field field__area-email" required>
+                                <button type="submit" class="email__button">Send Email</button>
+                            </form>
+                        </div>
+                        <ul class="email_not_valid_ul" id="not_valid_email">
+                            <li class="email_not_valid_li">You have entered an invalid email address</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="chat-cart">
+                    <div class="chat-cart__header">
+                        <h5 class="chat-cart__title">Cart</h5>
+                        <button class="chat-cart__close">
+                            <img src="{% static 'img/close-black.svg' %}" alt="#">
+                        </button>
+                    </div>
+                    <div class="chat-cart__content" id="chat-cart-content"></div>
+                </div>
+            </div>
+            <div class="chat-box__field">
+                <form class="field" method="POST" id="new-user-message-form">
+                    <textarea placeholder="write message" class="field__area" name="new-user-message" id="new-user-message" autocomplete="off"></textarea>
+                    <div type="submit" class="field__button">
+                        <img src="{% static 'img/send.svg' %}" alt="send" id="send-user-message">
+                    </div>
+                </form>
+            </div>
+            <div class="cart-buy">
+                <div class="cart-buy__price">
+                    <div class="sum"><span>Sum</span></div>
+                    <div class="price"><span>0 €</span></div>
+                </div>
+                <div class="cart-buy__button"><button class="product__button button--buy">BUY</button></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // WebSocket connect
+        function WebSocketConnect(ChatId) {
+            const grpname = JSON.parse(ChatId);
+            const chatSocket = new WebSocket("wss://" + window.location.host + "/ws/socket-server/" + String(grpname) + "/");
+            chatSocket.onopen = function (e) {
+                console.log("The connection was setup successfully !");
+            };
+            chatSocket.onclose = function (e) {
+                console.log("Something unexpected happened !");
+            };
+            // get message from websocket
+            chatSocket.onmessage = function (e) {
+                const websocket_data = JSON.parse(e.data);
+                if (websocket_data.sender == "manager") {
+                    preloader();
+                    setTimeout(function () {
+                        $('#preloader').hide();
+                        $('#preloader').remove();
+                        $('#chat-box-content').append(websocket_data.message_block);
+                    }, 2000);
+                }
+            }
+            chat_socket = chatSocket;
+        }
+    </script>
+</body>
+<script src="{% static 'js/chat_bot_ajax.js' %}"></script>
+<script src="{% static 'js/chat_bot_style.js' %}"></script>
+</html>

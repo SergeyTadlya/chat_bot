@@ -1,0 +1,80 @@
+{% extends 'support/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="chat_detail_container" align="center">
+        <h3>{{ title }}</h3>
+        <div id="chat_id" hidden>{{ chat_id }}</div>
+        <div class="button-container" style="padding-left: 10px">
+            <button type="button" class="btn btn-primary" id="manager-start">Start</button>
+            <button type="button" class="btn btn-primary" id="manager-finish">Finish</button>
+        </div>
+    </div>
+    <div class="chat_detail">
+        <div id="chat_history" class="chat_history"></div>
+        <div class="chat-box__field" id="text-form-area" hidden>
+            <form class="field" method="POST" id="manager-message-form">
+                <input name="manager" id="manager" value="{{ request.user.id }}" hidden>
+                <input name="user" id="user" value="{{ client }}" hidden>
+                <textarea placeholder="write message" class="field__area" name="new-manager-message" id="new-manager-message" autocomplete="off"></textarea>
+                <div type="submit" class="field__button">
+                    <img src="{% static 'img/send.svg' %}" alt="send" id="send-manager-message">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="chat_bot" hidden></div>
+    <script>
+        // set message histore in detail page
+        const htmlStrings = {{ message_history|safe }};
+        const myDiv = document.getElementById('chat_history');
+
+        htmlStrings.forEach(htmlString => {
+            myDiv.insertAdjacentHTML('beforeend', htmlString);
+        });
+
+        // show send button then manager printing message
+        const fieldArea = document.getElementById('new-manager-message');
+        const sendButton = document.getElementsByClassName('field__button')[0];
+        fieldArea.addEventListener('keyup', (e) => {
+            const values = fieldArea.value;
+            if (values.length) {
+                sendButton.classList.add('show');
+            } else {
+                sendButton.classList.remove('show');
+            }
+        });
+
+        // websocket connection
+        const grpname = JSON.parse(document.getElementById("chat_id").innerText);
+        const chatSocket = new WebSocket("ws://" + window.location.host + "/ws/socket-server/" + String(grpname) + "/");
+        // const chatSocket = new WebSocket("ws://" + window.location.host + "/ws/socket-server/");
+        chatSocket.onopen = function (e) {
+            console.log("The connection was setup successfully !");
+        };
+        chatSocket.onclose = function (e) {
+            console.log("Something unexpected happened !");
+        };
+        // get message from websocket
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            if(data.sender == "client") {
+                document.getElementById('chat_history').insertAdjacentHTML('beforeend', data.message_block);
+            }
+        }
+    </script>
+    {% if button_start == "none" and button_finish == "block" %}
+        <script>
+            $("#manager-start")[0].style = "display: none";
+            $("#manager-finish")[0].style = "";
+            document.getElementById('text-form-area').hidden = false;
+            document.getElementById('chat_history').style = "height: 89%";
+        </script>
+    {% else %}
+        <script>
+            $("#manager-start")[0].style = "";
+            $("#manager-finish")[0].style = "display: none";
+            document.getElementById('text-form-area').hidden = true;
+            document.getElementById('chat_history').style = "height: 100%";
+        </script>
+    {% endif %}
+{% endblock %}
