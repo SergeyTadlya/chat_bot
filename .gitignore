@@ -6,5 +6,4 @@ chat_bot_project/.env
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
-!**/dialogflow
-static/dialogflow/**
+/static/dialogflow/mokesciusrautasbot.json
