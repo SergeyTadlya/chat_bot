@@ -6,6 +6,5 @@ chat_bot_project/.env
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
-!**/dialogflow/__init__.json
 !**/dialogflow
-**/dialogflow/**
+static/dialogflow/**
